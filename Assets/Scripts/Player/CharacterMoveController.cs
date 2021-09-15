@@ -47,7 +47,8 @@ public class CharacterMoveController : MonoBehaviour
         // raycast ground
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, groundRaycastDistance, groundLayerMask);
         RaycastHit2D hit2 = Physics2D.Raycast(transform.position, new Vector2(-0.5f,-1), (groundRaycastDistance + 0.1f), groundLayerMask);
-        if (hit || hit2)
+        RaycastHit2D hit3 = Physics2D.Raycast(transform.position, new Vector2(0.5f, -1), groundRaycastDistance, groundLayerMask);
+        if (hit || hit2 || hit3)
         {
             if (!isOnGround && rig.velocity.y <= 0)
             {
@@ -128,5 +129,6 @@ public class CharacterMoveController : MonoBehaviour
     {
         Debug.DrawLine(transform.position, transform.position + (Vector3.down * groundRaycastDistance), Color.white);
         Debug.DrawLine(transform.position, transform.position + (new Vector3(-0.5f,-1f,0) * (groundRaycastDistance+0.1f)), Color.red);
+        Debug.DrawLine(transform.position, transform.position + (new Vector3(0.5f, -1f, 0) * groundRaycastDistance), Color.red);
     }
 }
