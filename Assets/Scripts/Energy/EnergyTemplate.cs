@@ -18,12 +18,15 @@ public class EnergyTemplate : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D colider)
     {
-        Debug.Log("Kena");
-        if(CharacterMoveController.Instance.weightval < 100)
+        if (colider.gameObject.tag == "Player")
         {
-            CharacterMoveController.Instance.weightval += damagerecharge;
+            if (CharacterMoveController.Instance.energy < 100)
+            {
+                //value -4 kalo bomb dan +6 jika energi boost
+                CharacterMoveController.Instance.energy += damagerecharge;
+            }
+            Destroy(this.gameObject);
         }
 
-        Destroy(this.gameObject);
     }
 }

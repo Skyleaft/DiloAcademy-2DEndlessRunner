@@ -42,7 +42,7 @@ public class CharacterMoveController : MonoBehaviour
     private float lastPositionX;
     [SerializeField] private Slider Bar;
     [SerializeField] private Text Energy;
-    public float weightval=50;
+    public float energy = 50;
 
 
     [Header("GameOver")]
@@ -107,20 +107,30 @@ public class CharacterMoveController : MonoBehaviour
         }
 
         anim.SetBool("isOnGround", isOnGround);
-        Bar.value = weightval;
-        Energy.text = weightval.ToString();
+        //masukin value energy
+        Bar.value = energy;
+        Energy.text = energy.ToString();
         // calculate score
         int distancePassed = Mathf.FloorToInt(transform.position.x - lastPositionX);
         int scoreIncrement = Mathf.FloorToInt(distancePassed / scoringRatio);
 
         if (scoreIncrement > 0)
         {
-            if (weightval > 0)
+
+            if (energy > 0)
             {
-                weightval -= 0.35f;
+                energy -= 0.35f;
 
             }
-            if (weightval > 95)
+            else
+            {
+                //ketika energi habis
+                GameOver();
+            }
+            //kondisi ketika energi tertentu
+            //semakin banyak energi player membesar dan melambat
+            //semakin sedikit energi player mengecil dan cepat
+            if (energy > 95)
             {
                 if (transform.localScale.x < 3f)
                 {
@@ -130,7 +140,7 @@ public class CharacterMoveController : MonoBehaviour
                     maxSpeed -= 0.005f;
                 }
             }
-            else if (weightval > 80 )
+            else if (energy > 80 )
             {
                 if (transform.localScale.x < 2.5f)
                 {
@@ -140,7 +150,7 @@ public class CharacterMoveController : MonoBehaviour
                     maxSpeed -= 0.005f;
                 }
             }
-            else if (weightval > 70 )
+            else if (energy > 70 )
             {
                 if (transform.localScale.x < 2f)
                 {
@@ -150,9 +160,9 @@ public class CharacterMoveController : MonoBehaviour
                     maxSpeed -= 0.005f;
                 }
             }
-            else if (weightval > 50)
+            else if (energy > 50)
             {
-                if (transform.localScale.x < 1.2f)
+                if (transform.localScale.x < 1.4f)
                 {
                     transform.localScale += new Vector3(0.01f, 0.01f, 0f);
                     groundRaycastDistance += 0.01f;
@@ -160,7 +170,7 @@ public class CharacterMoveController : MonoBehaviour
                     maxSpeed -= 0.005f;
                 }
             }
-            else if (weightval > 35)
+            else if (energy > 35)
             {
                 if(transform.localScale.x > 0.8f)
                 {
@@ -172,15 +182,14 @@ public class CharacterMoveController : MonoBehaviour
                 }
 
             }
-            else if (weightval > 10)
+            else if (energy > 10)
             {
                 if (transform.localScale.x > 0.4f)
                 {
                     transform.localScale -= new Vector3(0.01f, 0.01f, 0f);
                     groundRaycastDistance -= 0.008f;
                     moveAccel += 0.01f;
-                    maxSpeed += 0.01f;
-                    Debug.Log(weightval);
+                    maxSpeed += 0.02f;
                 }
             }
             score.IncreaseCurrentScore(scoreIncrement);

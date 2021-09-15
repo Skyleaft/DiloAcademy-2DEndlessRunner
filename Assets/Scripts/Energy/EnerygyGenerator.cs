@@ -4,6 +4,21 @@ using UnityEngine;
 
 public class EnerygyGenerator : MonoBehaviour
 {
+    // Instance ini mirip seperti pada GameManager, fungsinya adalah membuat sistem singleton
+    // untuk memudahkan pemanggilan script yang bersifat manager dari script lain
+    private static EnerygyGenerator _instance = null;
+    public static EnerygyGenerator Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindObjectOfType<EnerygyGenerator>();
+            }
+            return _instance;
+        }
+    }
+
     [Header("Templates")]
     public List<EnergyTemplate> energyTemplates;
     public float terrainTemplateWidth;
@@ -51,11 +66,11 @@ public class EnerygyGenerator : MonoBehaviour
         while (lastRemovedPositionX + terrainTemplateWidth < GetHorizontalPositionStart())
         {
             lastRemovedPositionX += terrainTemplateWidth;
-            RemoveTerrain(lastRemovedPositionX);
         }
     }
 
-    private float GetHorizontalPositionStart()
+
+        private float GetHorizontalPositionStart()
     {
         return gameCamera.ViewportToWorldPoint(new Vector2(0f, 0f)).x + areaStartOffset;
     }
@@ -65,75 +80,29 @@ public class EnerygyGenerator : MonoBehaviour
         return gameCamera.ViewportToWorldPoint(new Vector2(1f, 0f)).x + areaEndOffset;
     }
 
-    private void GenerateTerrain(float posX, TerrainTemplateController forceTerrain = null)
+    private void GenerateTerrain(float posX)
     {
         GameObject newTerrain = null;
 
-        if (forceTerrain == null)
-        {
-            newTerrain = GenerateFromPool(energyTemplates[Random.Range(0, energyTemplates.Count)].gameObject, transform);
-        }
-        else
-        {
-            newTerrain = GenerateFromPool(forceTerrain.gameObject, transform);
-        }
-
-
+        newTerrain = GenerateFromPool(energyTemplates[Random.Range(0, energyTemplates.Count)].gameObject, transform);
+        //generate posisi generatornya random y
         newTerrain.transform.position = new Vector2(posX, Random.Range(-2,2));
 
         spawnedTerrain.Add(newTerrain);
     }
 
-    private void RemoveTerrain(float posX)
-    {
-        GameObject terrainToRemove = null;
-        foreach (GameObject item in spawnedTerrain)
-        {
-            if (item.transform.position.x == posX)
-            {
-                terrainToRemove = item;
-                break;
-            }
-        }
-
-        if (terrainToRemove != null)
-        {
-            spawnedTerrain.Remove(terrainToRemove);
-            ReturnToPool(terrainToRemove);
-        }
-    }
 
     private GameObject GenerateFromPool(GameObject item, Transform parent)
     {
-        if (pool.ContainsKey(item.name))
-        {
-            if (pool[item.name].Count > 0)
-            {
-                GameObject newItemFromPool = pool[item.name][0];
-                pool[item.name].Remove(newItemFromPool);
-                newItemFromPool.SetActive(true);
-                return newItemFromPool;
-            }
-        }
-        else
-        {
-            pool.Add(item.name, new List<GameObject>());
-        }
 
         GameObject newItem = Instantiate(item, parent);
         newItem.name = item.name;
         return newItem;
     }
 
-    private void ReturnToPool(GameObject item)
+    public void ReturnToPool(GameObject item)
     {
-        if (!pool.ContainsKey(item.name))
-        {
-            Debug.LogError("INVALID POOL ITEM!!");
-        }
-
-        pool[item.name].Add(item);
-        item.SetActive(false);
+        Destroy(item);
     }
 
     private void OnDrawGizmos()
